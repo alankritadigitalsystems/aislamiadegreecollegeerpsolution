@@ -1,0 +1,139 @@
+.section-hr {
+  width: 100%;
+}
+
+.card-header.add {
+  width: 100%;
+  padding-left: 0.5rem;
+}
+
+.card-header.upload {
+  width: 100%;
+  padding-left: 2.5rem;
+}
+
+.form-control.small {
+  width: 12rem;
+}
+
+.form-control.small-2x {
+  width: 8rem;
+  margin-right: 1rem;
+}
+
+.form-control.big {
+  width: 15rem;
+}
+
+.form-control.award {
+  width: 31.3rem;
+}
+
+.form-wrapper {
+  margin-left: 4rem;
+}
+
+.plus-icon {
+  cursor: pointer;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: row;
+  padding: 0 2rem 1rem 2rem;
+}
+
+.browse-link {
+  color: #37c4c8;
+  font-weight: bold;
+}
+
+.browse-link.disable {
+  color: gainsboro;
+}
+
+.fa-cloud-upload {
+  color: #37c4c8;
+}
+
+.upload-icon {
+  padding-top: 6rem;
+  height: 15rem;
+  width: 100%;
+}
+
+.drop-zone {
+  border: 1px dashed #37c4c8;
+  border-radius: 1rem;
+  text-align: center;
+  height: 15rem;
+  width: 100%;
+  background-color: #f4f0f05c;
+  cursor: pointer;
+}
+
+.drop-zone.files {
+  text-align: initial;
+  cursor: auto;
+}
+
+.file-details {
+  padding: 2rem;
+  height: 15rem;
+  overflow: scroll;
+}
+
+.file-name {
+  width: 150px;
+  color: #37c4c8;
+  cursor: pointer;
+}
+
+.trash-icon:hover {
+  color: red;
+  cursor: pointer;
+}
+
+.file-name:hover {
+  text-decoration: underline;
+}
+
+.each-file {
+  display: flex;
+  flex-direction: row;
+}
+
+/* .each-file div {
+    margin-left: 2rem;
+} */
+
+.btn-re {
+  height: 2.5rem;
+  margin-right: 1rem;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.upload-btn {
+  height: 2.5rem;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.selected-files-section {
+  margin-left: 2rem;
+  width: 40%;
+}
+
+.empty-section {
+  border: 1px dashed #ccc;
+  height: 90%;
+  width: 100%;
+  border-radius: 1rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.empty-section div {
+  padding-top: 20%;
+}

@@ -1,0 +1,56 @@
+.metismenu li.active > a {
+  color: #2185d0;
+}
+
+.react-datepicker-wrapper {
+  display: block !important;
+}
+
+.card-remove {
+  display: none;
+}
+
+/* .circleCenter{margin-left: 90px;} */
+
+.dLang {
+  position: absolute;
+  will-change: transform;
+  transform: translate3d(-156px, 32px, 0px);
+  top: 0;
+  left: 0;
+}
+.dMail {
+  position: absolute;
+  will-change: transform;
+  transform: translate3d(-312px, 32px, 0px);
+  top: 0;
+  left: 0;
+}
+.dNoti {
+  position: absolute;
+  will-change: transform;
+  transform: translate3d(-282px, 32px, 0px);
+  top: 0;
+  left: 0;
+}
+.dProfile {
+  position: absolute;
+  will-change: transform;
+  transform: translate3d(-77px, 32px, 0px);
+  top: 0;
+  left: 0;
+}
+.d3Dot {
+  position: absolute;
+  will-change: transform;
+  top: 0px;
+  left: 0px;
+  transform: translate3d(-174px, -292px, 0px);
+}
+.dActivity {
+  position: absolute;
+  will-change: transform;
+  top: 0px;
+  left: 0px;
+  transform: translate3d(-174px, 25px, 0px);
+}

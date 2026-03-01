@@ -1,0 +1,149 @@
+.timetable-workout-error {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: #ea3f3f;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+}
+.timetable-workout-lunch {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: #ababab;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+}
+
+.timetable-workout {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: #3f71af;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+}
+.timetable-workout,
+.timetable.table > tbody > tr > td {
+  color: #fff;
+}
+.timetable,
+.table > tbody > tr > th {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+}
+.timetable,
+.table > thead > tr > th {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+}
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
+.box-table {
+  padding: 16px 30px;
+  margin: 0 -15px 15px;
+  /* border-color: ; */
+  border: 1px solid #eee;
+}
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+  border-top: transparent;
+  color: #26282c;
+  border-bottom: 1px solid #eee;
+}
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #eee;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: hsl(224, 100%, 99%);
+}
+caption {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  color: #26282c;
+  text-align: left;
+  caption-side: bottom;
+}
+.mb30 {
+  margin-bottom: 30px;
+}
+
+.leavetable-count {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.leavetable-head-index {
+  width: 50px;
+}
+.leavetable-head-leave {
+  width: 150px;
+}
+.leavetable-head-leave-range {
+  width: 200px;
+}
+.leavetable-head-days {
+  width: 60px;
+}
+.leavetable-head-reason {
+  width: 180px;
+}
+.leavetable-head-status {
+  width: 100px;
+}
+.leavetable-head-remark {
+  width: 310px;
+}
+
+.leave-table-index {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 50px;
+}
+.leave-table-leave {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 150px;
+  word-break: break-word;
+}
+.leave-table-leave-range {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 200px;
+  word-break: break-word;
+}
+.leave-table-days {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 60px;
+}
+.leave-table-reason {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 180px;
+  word-break: break-word;
+}
+.leave-table-status {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 100px;
+}
+.leave-table-remarks {
+  white-space: initial;
+  line-height: 1.5rem;
+  width: 310px;
+}

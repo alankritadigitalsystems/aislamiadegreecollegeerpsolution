@@ -1,0 +1,36 @@
+.form-control.error {
+    box-shadow: 0 0 0 0.05rem #e3000057;
+    border-color: #e3000057; 
+}
+
+.login-btn {
+    cursor: pointer;
+}
+
+.loading {
+    pointer-events: none;
+}
+
+.auth.option2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-bar {
+    position: absolute;
+    width: 100%;
+    height: 0rem;
+    background-color: #ff00186e;
+    text-align: center;
+    transition: height .3s;
+    overflow: hidden;
+}
+
+.notification-bar.active {
+    height: 1.4rem;
+}
+
+.notification-bar.active:before {
+    height: 1.4rem;
+    content: "Incorrect Email/Password";
+}
