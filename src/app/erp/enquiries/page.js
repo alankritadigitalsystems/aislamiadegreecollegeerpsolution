@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import axiosInstance from "../../lib/axiosInstance.js";
+import axiosInstance from "../../../lib/axiosInstance.js";
 import { IoAddOutline } from "react-icons/io5";
 import { FaPhoneAlt } from "react-icons/fa";
 import { LiaClipboardListSolid } from "react-icons/lia";

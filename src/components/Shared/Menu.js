@@ -257,7 +257,7 @@ const { role : userRole } = this.state;
                     ></i>
                   </Link>
                   <Link
-                    href= "filemanager"
+                    href= "/erp/filemanager"
                     className="nav-link icon app_file xs-hide"
                   >
                     <i
@@ -267,7 +267,7 @@ const { role : userRole } = this.state;
                       title="File Manager"
                     ></i>
                   </Link>
-                  <Link href= "socialMedia" className="nav-link icon xs-hide">
+                  <Link href= "/erp/socialMedia" className="nav-link icon xs-hide">
                     <i
                       className="fe fe-share-2"
                       data-toggle="tooltip"

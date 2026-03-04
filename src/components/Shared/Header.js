@@ -290,10 +290,10 @@ function Header(props) {
                   className={`dropdown-menu dropdown-menu-right dropdown-menu-arrow${profileMenu ? " show dProfile" : ""
                     }`}
                 >
-                  <Link className="dropdown-item" href="/viewuser">
+                  <Link className="dropdown-item" href="/erp/viewuser">
                     <i className="dropdown-icon fe fe-user"></i> Profile
                   </Link>
-                  <Link className="dropdown-item" href="/email">
+                  <Link className="dropdown-item" href="/erp/email">
                     <span className="float-right">
                       <span className="badge badge-primary">6</span>
                     </span>
@@ -307,7 +307,7 @@ function Header(props) {
                     <i className="dropdown-icon fe fe-help-circle"></i> Need
                     help?
                   </span>
-                  <Link className="dropdown-item" href="/login">
+                  <Link className="dropdown-item" href="/erp/login">
                     <i className="dropdown-icon fe fe-log-out"></i> Sign out
                   </Link>
                 </div>

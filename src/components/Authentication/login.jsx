@@ -58,7 +58,7 @@ const Login = () => {
     if (!validateForm()) return;
 
     const navigateTo = () => {
-      router.push("/");
+      router.push("/erp");
     };
 
     const payload =
@@ -199,7 +199,7 @@ const Login = () => {
 
           <div className="text-center text-sm mt-3">
             Don’t have an account?{" "}
-            <Link href="/signup" className="text-blue-600 hover:underline">
+            <Link href="/erp/signup" className="text-blue-600 hover:underline">
               Sign up
             </Link>
           </div>

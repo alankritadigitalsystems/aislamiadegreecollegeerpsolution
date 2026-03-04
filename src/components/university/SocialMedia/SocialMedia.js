@@ -46,7 +46,11 @@ export default class SocialMedia extends Component {
                     </button>
                   </li>
                   <li className="breadcrumb-item">
-                    <a href="#">App</a>
+                    <button onClick={() => {
+                        if (typeof window !== "undefined") {
+                          window.history.back();
+                        }
+                      }} >App</button>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     Social

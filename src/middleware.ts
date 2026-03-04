@@ -31,7 +31,7 @@ export function middleware(req: NextRequest) {
 }
   if (!userRole) {
     const url = req.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/erp/login";
     return NextResponse.redirect(url);
   }
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
-import useAuthStore from "./../store/useAuthStore";
+import useAuthStore from "../../store/useAuthStore";
 import Cookies from "js-cookie";
 
 const Layout = dynamic(() => import("@/components/Shared/Layout"), {

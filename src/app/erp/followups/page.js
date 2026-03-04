@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axiosInstance from "../../lib/axiosInstance.js";
+import axiosInstance from "../../../lib/axiosInstance.js";
 import {
   FaPlus,
   FaClipboardList,

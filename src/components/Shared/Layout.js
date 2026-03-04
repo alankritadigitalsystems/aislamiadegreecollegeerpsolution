@@ -20,10 +20,10 @@ const Layout = ({ props = {} }) => {
   } = state;
 
   const publicRoutes = [
-    "/login",
-    "/signup",
-    "/forgotpassword",
-    "/faculty/signup",
+    "/erp/login",
+    "/erp/signup",
+    "/erp/forgotpassword",
+    "/erp/faculty/signup",
   ];
 
   // ✅ Don't wrap login routes in layout

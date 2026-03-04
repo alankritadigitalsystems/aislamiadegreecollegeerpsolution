@@ -2,22 +2,15 @@ import mongoDbConnection from "@/middlewares/connection";
 import Enquiry from "@/models/enquiry";
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import {Resend} from "resend"
+const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(req: NextRequest) {
   try {
     await mongoDbConnection();
     const data = await req.json();
     const enquiry = await Enquiry.create(data);
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-    await transporter.sendMail({
-      from: `"Your College" <${process.env.SMTP_EMAIL}>`,
+    await resend.emails.send({
+      from: "Islamia Degree College <principalaidc@aislamiadegreecollegelko.org>",
       to: "sushimsushi8699@gmail.com",
       subject: "✨ New Enquiry Received!",
       html: `

@@ -142,6 +142,12 @@ export default function NewAdmissionPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
+       <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+        >
+          ← Back
+        </button>
       <h2 className="text-2xl font-bold mb-4 text-center">
         Student Admission Form
       </h2>
