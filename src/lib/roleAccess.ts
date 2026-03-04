@@ -16,6 +16,7 @@ export const roleAccess: Record<string, string[]> = {
   teacher: ["/erp/marks", "/erp/progress-report", "/erp/student/attendance", "/erp"],
   student: ["/erp/student/attendance", "/erp/progress-report", "/erp/fees", "/erp"],
   public: [
+    "/",
     "/erp/login",
     "/erp/signup",
     "/erp/forgotpassword",
