@@ -18,41 +18,59 @@ export async function POST(req: Request) {
       },
     });
 
-    const invites = await Promise.all(
+    const results = await Promise.all(
       emails.map(async (email: string) => {
-        // Check if faculty already exists
-        const existingFaculty = await FacultyModel.findOne({ email_id: email });
-        if (existingFaculty) {
-          throw new Error(`Faculty with email ${email} already exists.`);
+        try {
+          const trimmedEmail = email.trim();
+          if (!trimmedEmail) return { email: trimmedEmail, status: "ignored", message: "Empty email" };
+
+          // Check if faculty already exists
+          const existingFaculty = await FacultyModel.findOne({ email_id: trimmedEmail });
+          if (existingFaculty) {
+            return { email: trimmedEmail, status: "failed", message: "Faculty with this email already exists." };
+          }
+
+          // Check if already invited
+          const existingInvite = await Invite.findOne({ email: trimmedEmail, used: false });
+          if (existingInvite) {
+            return { email: trimmedEmail, status: "failed", message: "Invite already sent and pending." };
+          }
+
+          const token = crypto.randomBytes(32).toString("hex");
+          await Invite.create({ email: trimmedEmail, token });
+          
+          // Use the correct project link
+          const link = `https://www.aislamiadegreecollegelko.org/erp/faculty/signup?token=${token}`;
+
+          await transporter.sendMail({
+            from: `"Aislamiadegreecollege ERP" <${process.env.SMTP_EMAIL}>`,
+            to: trimmedEmail,
+            subject: "You're invited to join as a Teacher",
+            html: `<p>Hello,</p>
+                   <p>You’ve been invited to join as a teacher. Click below to register:</p>
+                   <a href="${link}" style="color: blue;">${link}</a>`,
+          });
+
+          return { email: trimmedEmail, status: "success", token };
+        } catch (err) {
+          console.error(`Error inviting ${email}:`, err);
+          return { email, status: "failed", message: "failed" };
         }
-
-        const token = crypto.randomBytes(32).toString("hex");
-        await Invite.create({ email, token });
-        
-        // Correct the link to include /erp prefix
-        const link = `https://www.aislamiadegreecollegelko.org/erp/faculty/signup?token=${token}`;
-
-        await transporter.sendMail({
-          from: `"Aislamiadegreecollege ERP" <${process.env.SMTP_EMAIL}>`,
-          to: email,
-          subject: "You're invited to join as a Teacher",
-          html: `<p>Hello,</p>
-                 <p>You’ve been invited to join as a teacher. Click below to register:</p>
-                 <a href="${link}" style="color: blue;">${link}</a>`,
-        });
-
-        return { email, token };
       })
     );
 
+    const successfulInvites = results.filter(r => r.status === "success");
+    const failedInvites = results.filter(r => r.status === "failed");
+
     return NextResponse.json({
-      message: "Invites sent successfully!",
-      invites,
+      message: `${successfulInvites.length} invites sent successfully! ${failedInvites.length} failed.`,
+      invites: successfulInvites,
+      errors: failedInvites,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Critical error in invite-teachers:", error);
     return NextResponse.json(
-      { valid: false, error: "Server error" },
+      { message: "Internal server error" },
       { status: 500 }
     );
   }
