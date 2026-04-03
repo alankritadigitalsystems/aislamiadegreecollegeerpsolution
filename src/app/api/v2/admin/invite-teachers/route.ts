@@ -31,7 +31,7 @@ export async function POST(req: Request) {
           }
 
           // Check if already invited (if so, we will re-send)
-          let token = crypto.randomBytes(32).toString("hex");
+          const token = crypto.randomBytes(32).toString("hex");
           const existingInvite = await Invite.findOne({ email: trimmedEmail, used: false });
           
           if (existingInvite) {
