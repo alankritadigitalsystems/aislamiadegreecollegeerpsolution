@@ -27,17 +27,19 @@ export async function POST(req: Request) {
           // Check if faculty already exists
           const existingFaculty = await FacultyModel.findOne({ email_id: trimmedEmail });
           if (existingFaculty) {
-            return { email: trimmedEmail, status: "failed", message: "Faculty with this email already exists." };
+            return { email: trimmedEmail, status: "failed", message: "User already registered as faculty." };
           }
 
-          // Check if already invited
+          // Check if already invited (if so, we will re-send)
+          let token = crypto.randomBytes(32).toString("hex");
           const existingInvite = await Invite.findOne({ email: trimmedEmail, used: false });
+          
           if (existingInvite) {
-            return { email: trimmedEmail, status: "failed", message: "Invite already sent and pending." };
+            existingInvite.token = token;
+            await existingInvite.save();
+          } else {
+            await Invite.create({ email: trimmedEmail, token });
           }
-
-          const token = crypto.randomBytes(32).toString("hex");
-          await Invite.create({ email: trimmedEmail, token });
           
           // Use the correct project link
           const link = `https://www.aislamiadegreecollegelko.org/erp/faculty/signup?token=${token}`;
@@ -51,10 +53,14 @@ export async function POST(req: Request) {
                    <a href="${link}" style="color: blue;">${link}</a>`,
           });
 
-          return { email: trimmedEmail, status: "success", token };
+          return { 
+            email: trimmedEmail, 
+            status: "success", 
+            message: existingInvite ? "Invitation re-sent" : "Invitation sent" 
+          };
         } catch (err) {
           console.error(`Error inviting ${email}:`, err);
-          return { email, status: "failed", message: "failed" };
+          return { email, status: "failed", message: "Failed to send email." };
         }
       })
     );
@@ -62,8 +68,18 @@ export async function POST(req: Request) {
     const successfulInvites = results.filter(r => r.status === "success");
     const failedInvites = results.filter(r => r.status === "failed");
 
+    let finalMessage = "";
+    if (successfulInvites.length > 0 && failedInvites.length === 0) {
+      finalMessage = `${successfulInvites.length} invitations sent successfully!`;
+    } else if (successfulInvites.length === 0 && failedInvites.length > 0) {
+      // If ONLY failures, show the REASON for the first failure to be informative
+      finalMessage = `Failed: ${failedInvites[0].message} (Total: ${failedInvites.length})`;
+    } else {
+      finalMessage = `${successfulInvites.length} sent, ${failedInvites.length} failed.`;
+    }
+
     return NextResponse.json({
-      message: `${successfulInvites.length} invites sent successfully! ${failedInvites.length} failed.`,
+      message: finalMessage,
       invites: successfulInvites,
       errors: failedInvites,
     });
