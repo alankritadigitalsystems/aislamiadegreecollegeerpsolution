@@ -49,10 +49,10 @@ export async function POST(req: Request) {
       message: "Invites sent successfully!",
       invites,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: error.message || "Error sending invites" },
+      { valid: false, error: "Server error" },
       { status: 500 }
     );
   }
