@@ -100,7 +100,7 @@ export default function FacultySignupPageClient() {
     const fetchInvite = async () => {
       try {
         const res = await axios.get(
-          `/api/admin/verify-invite?token=${inviteToken}`,
+          `/api/v2/admin/verify-invite?token=${inviteToken}`,
         );
         setFormData((prev) => ({ ...prev, email_id: res.data.email }));
       } catch (error) {

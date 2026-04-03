@@ -3,28 +3,37 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import mongoDbConnection from "@/middlewares/connection";
 import Invite from "@/models/faculty_invite_mail";
+import FacultyModel from "@/models/faculty";
 
 export async function POST(req: Request) {
   try {
     await mongoDbConnection();
     const { emails } = await req.json();
 
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
     const invites = await Promise.all(
       emails.map(async (email: string) => {
-        const token = crypto.randomBytes(32).toString("hex");
-        const invite = await Invite.create({ email, token });
-        const link = `http://localhost:3000/faculty/signup?token=${token}`;
+        // Check if faculty already exists
+        const existingFaculty = await FacultyModel.findOne({ email_id: email });
+        if (existingFaculty) {
+          throw new Error(`Faculty with email ${email} already exists.`);
+        }
 
-        const transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: {
-            user: process.env.SMTP_EMAIL,
-            pass: process.env.SMTP_PASS,
-          },
-        });
+        const token = crypto.randomBytes(32).toString("hex");
+        await Invite.create({ email, token });
+        
+        // Correct the link to include /erp prefix
+        const link = `https://www.aislamiadegreecollegelko.org/erp/faculty/signup?token=${token}`;
 
         await transporter.sendMail({
-          from: `"Your App" <${process.env.SMTP_EMAIL}>`,
+          from: `"Aislamiadegreecollege ERP" <${process.env.SMTP_EMAIL}>`,
           to: email,
           subject: "You're invited to join as a Teacher",
           html: `<p>Hello,</p>
@@ -40,10 +49,10 @@ export async function POST(req: Request) {
       message: "Invites sent successfully!",
       invites,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return NextResponse.json(
-      { message: "Error sending invites" },
+      { message: error.message || "Error sending invites" },
       { status: 500 }
     );
   }
