@@ -186,7 +186,7 @@ var facultyInfoSchema = new Schema(
      }, 
     reference_faculty: {
       type: String,
-      required: true,
+      required: false,
     },
     profile_photo_url: {
       type: String,

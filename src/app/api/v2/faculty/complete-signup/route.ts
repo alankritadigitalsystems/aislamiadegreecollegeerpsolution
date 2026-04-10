@@ -127,10 +127,10 @@ export async function POST(req: Request) {
       { message: "Signup complete successfully!", faculty: newFaculty },
       { status: 201 }
     );
-  } catch (error) {
-    console.error("Signup error:", error);
+  } catch (error: any) {
+    console.error("Signup error details:", error);
     return NextResponse.json(
-      { message: "Server error" },
+      { message: error?.message || "Server error" },
       { status: 500 }
     );
   }

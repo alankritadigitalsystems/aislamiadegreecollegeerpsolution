@@ -4,6 +4,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import axiosInstance from "@/lib/axiosInstance";
+import { toast } from "sonner";
 
 interface FacultyFormData {
   full_name: { first_name: string; last_name: string };
@@ -152,20 +153,34 @@ export default function FacultySignupPageClient() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setStatus("Creating your account...");
+    const loadingToast = toast.loading("Creating your account...");
 
     try {
-      await axiosInstance.post("/faculty/complete-signup", {
+      // Data Transformation: Ensure numeric fields are correctly formatted
+      const dataToSubmit = {
         ...formData,
+        experience_in_this_college: formData.experience_in_this_college === "" ? null : Number(formData.experience_in_this_college),
+        number_of_books_published: formData.number_of_books_published === "" ? null : Number(formData.number_of_books_published),
+        no_of_phd_guided: {
+          as_main_supervisor: formData.no_of_phd_guided.as_main_supervisor === "" ? null : Number(formData.no_of_phd_guided.as_main_supervisor),
+          as_co_supervisor: formData.no_of_phd_guided.as_co_supervisor === "" ? null : Number(formData.no_of_phd_guided.as_co_supervisor),
+        },
+        no_of_papers_published: {
+          national: formData.no_of_papers_published.national === "" ? null : Number(formData.no_of_papers_published.national),
+          international: formData.no_of_papers_published.international === "" ? null : Number(formData.no_of_papers_published.international),
+        },
+        reference_faculty: formData.reference_faculty || "",
         token: inviteToken,
-      });
+      };
+
+      await axiosInstance.post("/faculty/complete-signup", dataToSubmit);
+      
+      toast.success("Signup successful! You can now log in.", { id: loadingToast });
       setStatus("Signup successful! You can now log in.");
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setStatus(error.response?.data?.message || "Signup failed");
-      } else {
-        setStatus("Signup failed");
-      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Signup failed";
+      toast.error(errorMessage, { id: loadingToast });
+      setStatus(errorMessage);
     }
   };
 
