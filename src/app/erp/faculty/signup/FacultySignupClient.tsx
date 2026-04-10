@@ -178,7 +178,7 @@ export default function FacultySignupPageClient() {
       toast.success("Signup successful! You can now log in.", { id: loadingToast });
       setStatus("Signup successful! You can now log in.");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Signup failed";
+      const errorMessage = "Signup failed";
       toast.error(errorMessage, { id: loadingToast });
       setStatus(errorMessage);
     }
