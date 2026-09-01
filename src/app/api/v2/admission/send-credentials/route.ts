@@ -75,10 +75,11 @@ export async function POST(req: Request) {
       rawPassword,
       mailStatus: mailRes,
     });
-  } catch (error: any) {
-    console.error("send-credentials API error:", error);
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("send-credentials API error:", errorMsg);
     return NextResponse.json(
-      { success: false, message: error?.message || "Internal server error" },
+      { success: false, message: errorMsg || "Internal server error" },
       { status: 500 }
     );
   }

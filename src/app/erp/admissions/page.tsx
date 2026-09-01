@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axiosInstance.js";
-import { PiStudentFill, PiUserPlusBold, PiFileXlsBold, PiPaperPlaneTiltBold, PiEnvelopeSimpleBold, PiXBold } from "react-icons/pi";
+import { PiStudentFill, PiUserPlusBold, PiPaperPlaneTiltBold, PiEnvelopeSimpleBold, PiXBold } from "react-icons/pi";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -93,9 +93,10 @@ export default function AdmissionsPage() {
       } else {
         toast.error(res.data.message || "Failed to send credentials");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
       console.error(err);
-      toast.error(err.response?.data?.message || "Error sending credentials");
+      toast.error(errorObj?.response?.data?.message || "Error sending credentials");
     } finally {
       setSendingCreds(false);
     }

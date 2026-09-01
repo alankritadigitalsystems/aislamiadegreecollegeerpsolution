@@ -9,9 +9,7 @@ import {
   PiUploadSimpleBold,
   PiUserPlusBold,
   PiFileXlsBold,
-  PiDownloadSimpleBold,
   PiCheckCircleFill,
-  PiWarningCircleFill,
   PiPaperPlaneTiltBold,
   PiTrashBold,
   PiArrowLeftBold,
@@ -32,6 +30,19 @@ interface ParsedStudentRow {
   email: string;
   mobile_number?: string;
   isValid?: boolean;
+}
+
+interface UploadSummaryStats {
+  total: number;
+  imported: number;
+  emailsSent: number;
+  skipped: number;
+}
+
+interface UploadSummaryData {
+  success: boolean;
+  message?: string;
+  stats?: UploadSummaryStats;
 }
 
 export default function AddStudentPage() {
@@ -61,10 +72,7 @@ export default function AddStudentPage() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<string | null>(null);
-  const [uploadSummary, setUploadSummary] = useState<any | null>(null);
-
- 
-  
+  const [uploadSummary, setUploadSummary] = useState<UploadSummaryData | null>(null);
 
   // Parse Excel File
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +88,7 @@ export default function AddStudentPage() {
         const wb = XLSX.read(bstr, { type: "binary" });
         const wsName = wb.SheetNames[0];
         const ws = wb.Sheets[wsName];
-        const rawJson: any[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
+        const rawJson: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
 
         if (rawJson.length === 0) {
           toast.error("Excel sheet is empty!");
@@ -105,7 +113,7 @@ export default function AddStudentPage() {
           const roll_number = String(getVal(["Roll No.", "Roll No", "roll_no", "roll_number"])).trim();
           const name = String(getVal(["name", "student name", "student_name", "full_name"])).trim();
           const father_name = String(getVal(["f_name", "f name", "father name", "father_name"])).trim();
-          const fee_amt = getVal(["fee amt", "fee_amt", "amount", "fee"]) || "";
+          const fee_amt = String(getVal(["fee amt", "fee_amt", "amount", "fee"]) || "");
           const fee_date = String(getVal(["fee date", "fee_date", "date"])).trim();
           const fee_div = String(getVal(["fee div", "fee_div", "installment"])).trim();
           const className = String(getVal(["Class.", "Class", "class"])).trim();
@@ -132,7 +140,7 @@ export default function AddStudentPage() {
         setExcelRows(normalizedRows);
         setUploadSummary(null);
         toast.success(`Loaded ${normalizedRows.length} student records from Excel`);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Excel parse error:", err);
         toast.error("Failed to parse Excel file. Please ensure it's a valid xlsx/xls/csv.");
       }
@@ -176,9 +184,10 @@ export default function AddStudentPage() {
       } else {
         toast.error(res.data.message || "Failed to process bulk upload.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
       console.error(err);
-      toast.error(err.response?.data?.message || "Error submitting bulk student data");
+      toast.error(errorObj?.response?.data?.message || "Error submitting bulk student data");
     } finally {
       setBulkLoading(false);
       setBulkProgress(null);
@@ -241,9 +250,10 @@ export default function AddStudentPage() {
       } else {
         toast.error(res.data.message || "Failed to add student.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to add student.");
+      toast.error(errorObj?.response?.data?.message || "Failed to add student.");
     } finally {
       setManualLoading(false);
     }

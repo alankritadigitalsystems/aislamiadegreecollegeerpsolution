@@ -4,7 +4,6 @@ import AdmissionStudentInfo from "@/models/admission_student_info";
 import StudentLogin from "@/models/student_login_model";
 import Fees from "@/models/fees_model";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
 import { sendStudentCredentialsEmail } from "@/lib/sendStudentEmail";
 
 function generateSecurePassword(length = 8) {
@@ -14,6 +13,36 @@ function generateSecurePassword(length = 8) {
     pwd += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return pwd;
+}
+
+interface StudentInputRow {
+  enrol_no?: string;
+  roll_number?: string;
+  roll_no?: string;
+  name?: string;
+  father_name?: string;
+  f_name?: string;
+  class?: string;
+  className?: string;
+  aadhar_number?: string;
+  adhar_card_no?: string;
+  email?: string;
+  email_id?: string;
+  mobile_number?: string;
+  fee_amt?: string | number;
+  fee_date?: string;
+  fee_div?: string;
+}
+
+interface BulkResultItem {
+  row: number;
+  enrol_no?: string;
+  name?: string;
+  email?: string;
+  student_id?: unknown;
+  credentialsSent?: boolean;
+  status: "success" | "failed";
+  error?: string;
 }
 
 export async function POST(req: Request) {
@@ -29,13 +58,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const results: any[] = [];
+    const results: BulkResultItem[] = [];
     let importedCount = 0;
     let emailsSentCount = 0;
     let skippedCount = 0;
 
     for (let index = 0; index < students.length; index++) {
-      const row = students[index];
+      const row: StudentInputRow = students[index];
       const enrol_no = row.enrol_no?.toString().trim() || "";
       const roll_number = row.roll_number?.toString().trim() || row.roll_no?.toString().trim() || "";
       const fullNameStr = row.name?.toString().trim() || "";
@@ -67,7 +96,7 @@ export async function POST(req: Request) {
         }
 
         let studentDoc;
-        const studentPayload: any = {
+        const studentPayload: Record<string, unknown> = {
           full_name: {
             first_name,
             last_name,
@@ -104,7 +133,7 @@ export async function POST(req: Request) {
             const currentYear = new Date().getFullYear();
             const academic_year = `${currentYear}-${currentYear + 1}`;
 
-            let feeDoc = await Fees.findOne({ student_id: studentDoc._id });
+            const feeDoc = await Fees.findOne({ student_id: studentDoc._id });
             const installmentItem = {
               name: fee_div || "Installment-1",
               amount: fee_amt,
@@ -139,7 +168,6 @@ export async function POST(req: Request) {
 
         // Handle Email Credentials
         let credentialsSent = false;
-        let passwordCreated = null;
 
         if (email_id && sendEmailImmediately) {
           const rawPassword = generateSecurePassword(8);
@@ -160,8 +188,6 @@ export async function POST(req: Request) {
               password: hashedPassword,
             });
           }
-
-          passwordCreated = rawPassword;
 
           // Dispatch email
           const mailRes = await sendStudentCredentialsEmail({
@@ -186,15 +212,16 @@ export async function POST(req: Request) {
           credentialsSent,
           status: "success",
         });
-      } catch (err: any) {
-        console.error(`Row ${index + 1} processing error:`, err);
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.error(`Row ${index + 1} processing error:`, errorMsg);
         skippedCount++;
         results.push({
           row: index + 1,
           enrol_no,
           name: fullNameStr,
           status: "failed",
-          error: err?.message || "Unknown error",
+          error: errorMsg || "Unknown error",
         });
       }
     }
@@ -210,11 +237,13 @@ export async function POST(req: Request) {
       },
       results,
     });
-  } catch (error: any) {
-    console.error("Bulk upload API error:", error);
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("Bulk upload API error:", errorMsg);
     return NextResponse.json(
-      { success: false, message: error?.message || "Internal server error" },
+      { success: false, message: errorMsg || "Internal server error" },
       { status: 500 }
     );
   }
 }
+
