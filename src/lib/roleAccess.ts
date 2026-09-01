@@ -2,6 +2,7 @@ export const roleAccess: Record<string, string[]> = {
   superadmin: [
     "/erp",
     "/erp/admissions",
+    "/erp/admissions/add-student",
     "/erp/new-admission",
     "/erp/enquiries",
     "/erp/assign-subject",

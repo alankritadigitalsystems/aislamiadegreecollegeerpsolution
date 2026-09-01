@@ -25,6 +25,13 @@ export const superAdminMenu = [
   },
   {
     id: 3,
+    icon: admissionLogo.src,
+    label: "Add Student",
+    to: "/erp/admissions/add-student",
+    displayToAll: true,
+  },
+  {
+    id: 4,
     icon: Enquiry.src,
     label: "Enquiries",
     to: "/erp/enquiries",
