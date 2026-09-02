@@ -115,6 +115,20 @@ export const adminMenu = [
     to: "/erp/admin/funds",
     displayToAll: true,
   },
+  {
+    id: 3,
+    icon: admissionLogo.src,
+    label: "All Admissions",
+    to: "/erp/admissions",
+    displayToAll: true,
+  },
+  {
+    id: 4,
+    icon: admissionLogo.src,
+    label: "Add Student",
+    to: "/erp/admissions/add-student",
+    displayToAll: true,
+  },
 ];
 export const teacherMenu = [
   {

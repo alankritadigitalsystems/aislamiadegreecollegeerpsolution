@@ -13,7 +13,7 @@ export const roleAccess: Record<string, string[]> = {
     "/erp/pagesearch",
     "/erp/news",
   ],
-  admin: ["/erp/fees" , "/erp"],
+  admin: ["/erp/fees" , "/erp" , "/erp/admissions/add-student", "/erp/admissions",],
   teacher: ["/erp/marks", "/erp/progress-report", "/erp/student/attendance", "/erp"],
   student: ["/erp/student/attendance", "/erp/progress-report", "/erp/fees", "/erp"],
   public: [
