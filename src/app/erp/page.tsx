@@ -16,26 +16,13 @@ export default function HomePage() {
     const fetchProfile = async () => {
       try {
         const userId = Cookies.get("userId");
-        if (!userId) throw new Error("No userId in cookies");
-
-        const res = await fetch(`/api/v2/faculty/FacultyByID?_id=${userId}`);
+        const res = await fetch(userId ? `/api/v2/auth/me?userId=${userId}` : "/api/v2/auth/me");
         const data = await res.json();
-        const normalized = {
-          ...data,
-          first_name: data?.full_name?.first_name || "",
-          last_name: data?.full_name?.last_name || "",
-          email: data?.email_id || "",
-          mobile: data?.mobile_number || "",
-          gender: data?.gender || "",
-          profile_picture: data?.profile_picture || "",
-          date_of_joining: data?.date_of_joining?.split("T")[0] || "",
-          date_of_retirement: data?.date_of_retirement?.split("T")[0] || "",
-          role: data?.role || "",
-        };
-//
-        setUser(normalized);
+        if (data.success && data.user) {
+          setUser(data.user);
+        }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching authentic profile from DB:", error);
       }
     };
 

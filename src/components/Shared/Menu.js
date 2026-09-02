@@ -57,9 +57,26 @@ class Menu extends Component {
       role
     };
   }
-componentDidMount() {
+async componentDidMount() {
   // Build default menus on first load
   this.buildMenus();
+
+  // Fetch authentic role from DB
+  try {
+    const userId = Cookies.get("userId");
+    const res = await fetch(userId ? `/api/v2/auth/me?userId=${userId}` : "/api/v2/auth/me");
+    const data = await res.json();
+    if (data?.success && data?.role) {
+      const genuineRole = data.role;
+      const adMenu = getClientMenu(genuineRole);
+      this.setState({
+        role: genuineRole,
+        superAdminMenu: adMenu,
+      });
+    }
+  } catch (err) {
+    console.error("Failed to verify authentic role from DB:", err);
+  }
 }
 
 componentDidUpdate(prevProps) {
@@ -74,11 +91,11 @@ componentDidUpdate(prevProps) {
 
 buildMenus = () => {
   const { permissions = {}, isSuperAdmin } = this.props;
-  const adMenu = getClientMenu(); 
+  const currentRole = this.state?.role || Cookies.get("userRole") || "guest";
+  const adMenu = getClientMenu(currentRole); 
   const newUniMenu = this.getMetisMenu(permissions);
- const role = Cookies.get("userRole") || "guest";
   this.setState({
-    role,
+    role: currentRole,
     superAdminMenu: adMenu,
     uniMenu: newUniMenu,
     isMenuSet: true,

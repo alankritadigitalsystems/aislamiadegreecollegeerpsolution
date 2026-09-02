@@ -108,13 +108,13 @@ export const adminMenu = [
     label: "Fees",
     to: "/erp/fees",
   },
-  {
-    id: 2,
-    icon: newFaculty.src,
-    label: "Fund Distribution",
-    to: "/erp/admin/funds",
-    displayToAll: true,
-  },
+  // {
+  //   id: 2,
+  //   icon: newFaculty.src,
+  //   label: "Fund Distribution",
+  //   to: "/erp/admin/funds",
+  //   displayToAll: true,
+  // },
   {
     id: 3,
     icon: admissionLogo.src,
@@ -250,7 +250,7 @@ export function getMenuByRole(role: string) {
   }
 }
 
-export function getClientMenu() {
-  const role = Cookies.get("userRole") || "guest";
+export function getClientMenu(customRole?: string) {
+  const role = customRole || Cookies.get("userRole") || "guest";
   return getMenuByRole(role);
 }

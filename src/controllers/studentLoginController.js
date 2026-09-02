@@ -56,7 +56,7 @@ export async function studentLogin(request) {
     // ✅ Set cookies using NextResponse API
     response.cookies.set("userRole", "student", {
       path: "/",
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 6, // 6 hours
