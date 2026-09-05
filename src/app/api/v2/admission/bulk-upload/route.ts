@@ -16,19 +16,28 @@ function generateSecurePassword(length = 8) {
 }
 
 interface StudentInputRow {
+  Enrol_No?: string;
   enrol_no?: string;
   roll_number?: string;
   roll_no?: string;
   name?: string;
+  NAME?: string;
   father_name?: string;
+  "FATHER NAME"?: string;
   f_name?: string;
+  "SUB-GROUP-ID"?: string;
+  sub_group_id?: string;
   class?: string;
   className?: string;
+  "PHONE NO."?: string;
+  "PHONE NO"?: string;
+  phone_no?: string;
+  mobile_number?: string;
+  "ADHAR NUMBER"?: string;
+  adhar_number?: string;
   aadhar_number?: string;
-  adhar_card_no?: string;
   email?: string;
   email_id?: string;
-  mobile_number?: string;
   fee_amt?: string | number;
   fee_date?: string;
   fee_div?: string;
@@ -48,6 +57,21 @@ interface BulkResultItem {
 export async function POST(req: Request) {
   try {
     await mongoDbConnection();
+
+    // Drop legacy non-sparse email_id_1 index if it exists to allow null/absent emails
+    try {
+      const collection = AdmissionStudentInfo.collection;
+      const indexes = await collection.indexes();
+      const emailIndex = indexes.find((idx) => idx.name === "email_id_1");
+      if (emailIndex && !emailIndex.sparse) {
+        await collection.dropIndex("email_id_1");
+        console.log("Dropped legacy non-sparse email_id_1 index");
+      }
+    } catch (idxErr) {
+      // Ignore if index doesn't exist or collection isn't ready
+      console.log("Index check/drop skipped:", (idxErr as Error).message);
+    }
+
     const body = await req.json();
     const { students = [], sendEmailImmediately = true } = body;
 
@@ -65,14 +89,15 @@ export async function POST(req: Request) {
 
     for (let index = 0; index < students.length; index++) {
       const row: StudentInputRow = students[index];
-      const enrol_no = row.enrol_no?.toString().trim() || "";
-      const roll_number = row.roll_number?.toString().trim() || row.roll_no?.toString().trim() || "";
-      const fullNameStr = row.name?.toString().trim() || "";
-      const father_name = row.father_name?.toString().trim() || row.f_name?.toString().trim() || "";
-      const className = row.class?.toString().trim() || row.className?.toString().trim() || "";
-      const aadhar_number = row.aadhar_number?.toString().trim() || row.adhar_card_no?.toString().trim() || "";
-      const email_id = row.email?.toString().trim() || row.email_id?.toString().trim() || "";
-      const mobile_number = row.mobile_number?.toString().trim() || "";
+      const enrol_no = (row.Enrol_No || row.enrol_no || "").toString().trim();
+      const roll_number = (row.roll_number || row.roll_no || "").toString().trim();
+      const fullNameStr = (row.NAME || row.name || "").toString().trim();
+      const father_name = (row["FATHER NAME"] || row.father_name || row.f_name || "").toString().trim();
+      const sub_group_id = (row["SUB-GROUP-ID"] || row.sub_group_id || row.class || row.className || "").toString().trim();
+      const className = sub_group_id;
+      const phone_no = (row["PHONE NO."] || row["PHONE NO"] || row.phone_no || row.mobile_number || "").toString().trim();
+      const aadhar_number = (row["ADHAR NUMBER"] || row.adhar_number || row.aadhar_number || "").toString().trim();
+      const email_id = (row.email || row.email_id || "").toString().trim();
       const fee_amt = row.fee_amt ? Number(row.fee_amt) : undefined;
       const fee_date = row.fee_date?.toString().trim() || "";
       const fee_div = row.fee_div?.toString().trim() || "";
@@ -102,6 +127,7 @@ export async function POST(req: Request) {
             last_name,
           },
           father_name,
+          sub_group_id,
           class: className,
           roll_number,
           enrol_no,
@@ -113,7 +139,7 @@ export async function POST(req: Request) {
         };
 
         if (email_id) studentPayload.email_id = email_id;
-        if (mobile_number) studentPayload.mobile_number = mobile_number;
+        if (phone_no) studentPayload.mobile_number = phone_no;
 
         if (existingStudent) {
           // Update existing

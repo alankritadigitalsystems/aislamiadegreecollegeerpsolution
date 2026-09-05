@@ -3,6 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const admissionStudentInfoSchema = new Schema(
   {
     enrol_no: { type: String, trim: true, index: true },
+    sub_group_id: { type: String, trim: true },
     class: { type: String, trim: true },
     subjects: {
       first: String,
@@ -44,8 +45,8 @@ const admissionStudentInfoSchema = new Schema(
     correspondence_district: String,
     correspondence_address: String,
     correspondence_pincode: String,
-    email_id: { type: String, trim: true, sparse: true, index: true },
-    mobile_number: { type: String, trim: true, sparse: true },
+    email_id: { type: String, trim: true, default: undefined },
+    mobile_number: { type: String, trim: true },
     high_school_passing_year: String,
     high_school_board: String,
     high_school_max_marks: Number,

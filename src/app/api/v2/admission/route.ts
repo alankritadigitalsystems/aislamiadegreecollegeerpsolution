@@ -10,6 +10,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function GET() {
   await mongoDbConnection();
 
+  try {
+    const collection = AdmissionStudentInfo.collection;
+    const indexes = await collection.indexes();
+    const emailIndex = indexes.find((idx) => idx.name === "email_id_1");
+    if (emailIndex && !emailIndex.sparse) {
+      await collection.dropIndex("email_id_1");
+    }
+  } catch {}
+
   const allAdmissions = await AdmissionStudentInfo.find().sort({
     createdAt: -1,
   });
@@ -60,9 +69,29 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error creating admission:", error);
-
     return NextResponse.json(
       { success: false, error: "Error creating admission" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  await mongoDbConnection();
+
+  try {
+    const deletedAdmissions = await AdmissionStudentInfo.deleteMany({});
+    const deletedLogins = await StudentLogin.deleteMany({});
+    
+    return NextResponse.json({
+      success: true,
+      message: `Successfully deleted all admission records (${deletedAdmissions.deletedCount}) and student logins (${deletedLogins.deletedCount}).`,
+      count: deletedAdmissions.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error deleting admissions:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to delete admissions data" },
       { status: 500 }
     );
   }

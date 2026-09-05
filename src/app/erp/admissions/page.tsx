@@ -10,6 +10,8 @@ interface Admission {
   _id: string;
   enrol_no?: string;
   full_name: { first_name: string; last_name?: string };
+  father_name?: string;
+  sub_group_id?: string;
   email_id?: string;
   mobile_number?: string;
   class: string;
@@ -144,6 +146,27 @@ export default function AdmissionsPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {admissions.length > 0 && (
+            <button
+              onClick={async () => {
+                if (window.confirm("Are you sure you want to delete all student admission records? This action cannot be undone.")) {
+                  try {
+                    const res = await axiosInstance.delete("/admission");
+                    if (res.data.success) {
+                      toast.success(res.data.message || "All records deleted");
+                      setAdmissions([]);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    toast.error("Failed to delete records");
+                  }
+                }
+              }}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-semibold text-sm rounded-xl transition"
+            >
+              Clear All Records
+            </button>
+          )}
           <Link
             href="/erp/admissions/add-student"
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow transition"
@@ -162,14 +185,14 @@ export default function AdmissionsPage() {
           <thead className="bg-slate-100 text-slate-700 uppercase font-semibold tracking-wider">
             <tr>
               <th className="px-3 py-3 border-b">#</th>
-              <th className="px-3 py-3 border-b">Enrol No</th>
-              <th className="px-3 py-3 border-b">Roll No.</th>
-              <th className="px-3 py-3 border-b">Name</th>
-              <th className="px-3 py-3 border-b">Class</th>
-              <th className="px-3 py-3 border-b">Mobile</th>
+              <th className="px-3 py-3 border-b">Enrol_No</th>
+              <th className="px-3 py-3 border-b">NAME</th>
+              <th className="px-3 py-3 border-b">FATHER NAME</th>
+              <th className="px-3 py-3 border-b">SUB-GROUP-ID</th>
+              <th className="px-3 py-3 border-b">PHONE NO.</th>
+              <th className="px-3 py-3 border-b">ADHAR NUMBER</th>
               <th className="px-3 py-3 border-b min-w-[200px]">Portal Email & Login</th>
               <th className="px-3 py-3 border-b text-center">Status</th>
-              <th className="px-3 py-3 border-b">Date</th>
             </tr>
           </thead>
 
@@ -199,18 +222,24 @@ export default function AdmissionsPage() {
                     {adm.enrol_no || "-"}
                   </td>
 
-                  <td className="px-3 py-2.5 font-medium text-gray-700">
-                    {adm.roll_number || "-"}
-                  </td>
-
                   <td className="px-3 py-2.5 text-gray-900 font-semibold">
-                    {adm.full_name.first_name} {adm.full_name.last_name || ""}
+                    {adm.full_name?.first_name} {adm.full_name?.last_name || ""}
                   </td>
 
-                  <td className="px-3 py-2.5 font-medium text-gray-700">{adm.class || "-"}</td>
+                  <td className="px-3 py-2.5 text-gray-700">
+                    {adm.father_name || "-"}
+                  </td>
+
+                  <td className="px-3 py-2.5 font-medium text-gray-700">
+                    {adm.sub_group_id || adm.class || "-"}
+                  </td>
 
                   <td className="px-3 py-2.5 text-gray-600">
                     {adm.mobile_number || "-"}
+                  </td>
+
+                  <td className="px-3 py-2.5 text-gray-600 font-mono text-[11px]">
+                    {adm.aadhar_number || "-"}
                   </td>
 
                   {/* Email & Credentials Action */}
@@ -262,10 +291,6 @@ export default function AdmissionsPage() {
                       <option value="Enrolled">Enrolled</option>
                       <option value="Rejected">Rejected</option>
                     </select>
-                  </td>
-
-                  <td className="px-3 py-2.5 text-gray-500 text-[11px]">
-                    {new Date(adm.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))

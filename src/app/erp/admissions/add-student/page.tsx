@@ -19,16 +19,12 @@ import Link from "next/link";
 interface ParsedStudentRow {
   id: string;
   enrol_no: string;
-  roll_number: string;
   name: string;
   father_name: string;
-  fee_amt: string | number;
-  fee_date: string;
-  fee_div: string;
-  class: string;
+  sub_group_id: string;
+  phone_no: string;
   aadhar_number: string;
   email: string;
-  mobile_number?: string;
   isValid?: boolean;
 }
 
@@ -51,18 +47,12 @@ export default function AddStudentPage() {
   // --- Manual Form State ---
   const [manualForm, setManualForm] = useState({
     enrol_no: "",
-    roll_number: "",
-    first_name: "",
-    last_name: "",
+    name: "",
     father_name: "",
-    class: "B.A. II",
-    gender: "Male",
+    sub_group_id: "B.A. I",
+    phone_no: "",
     aadhar_number: "",
     email_id: "",
-    mobile_number: "",
-    fee_amt: "",
-    fee_date: new Date().toISOString().split("T")[0],
-    fee_div: "2-Inst.-2",
   });
   const [manualLoading, setManualLoading] = useState(false);
   const [sendCredsNow, setSendCredsNow] = useState(true);
@@ -96,7 +86,8 @@ export default function AddStudentPage() {
         }
 
         const normalizedRows: ParsedStudentRow[] = rawJson.map((row, idx) => {
-          // Flexible key matching for exact column headers from photo
+          // Flexible key matching for exact column headers from photo:
+          // Enrol_No, NAME, FATHER NAME, SUB-GROUP-ID, PHONE NO., ADHAR NUMBER, EMAIL
           const getVal = (keys: string[]) => {
             for (const k of keys) {
               const matchedKey = Object.keys(row).find(
@@ -109,31 +100,23 @@ export default function AddStudentPage() {
             return "";
           };
 
-          const enrol_no = String(getVal(["enrol no", "enrol_no", "enrolment no", "enrolment"])).trim();
-          const roll_number = String(getVal(["Roll No.", "Roll No", "roll_no", "roll_number"])).trim();
-          const name = String(getVal(["name", "student name", "student_name", "full_name"])).trim();
-          const father_name = String(getVal(["f_name", "f name", "father name", "father_name"])).trim();
-          const fee_amt = String(getVal(["fee amt", "fee_amt", "amount", "fee"]) || "");
-          const fee_date = String(getVal(["fee date", "fee_date", "date"])).trim();
-          const fee_div = String(getVal(["fee div", "fee_div", "installment"])).trim();
-          const className = String(getVal(["Class.", "Class", "class"])).trim();
-          const aadhar_number = String(getVal(["Adhar card No.", "Adhar card No", "aadhar_number", "aadhar card no", "aadhar"])).trim();
-          const email = String(getVal(["email", "email_id", "email id"])).trim();
-          const mobile_number = String(getVal(["mobile", "mobile_number", "phone"])).trim();
+          const enrol_no = String(getVal(["Enrol_No", "Enrol No", "enrol_no", "enrol no", "enrolment no", "enrolment"])).trim();
+          const name = String(getVal(["NAME", "name", "student name", "student_name", "full_name"])).trim();
+          const father_name = String(getVal(["FATHER NAME", "father name", "father_name", "f_name", "f name"])).trim();
+          const sub_group_id = String(getVal(["SUB-GROUP-ID", "sub-group-id", "sub_group_id", "sub group id", "Class.", "Class", "class"])).trim();
+          const phone_no = String(getVal(["PHONE NO.", "PHONE NO", "phone no.", "phone no", "phone_no", "mobile", "mobile_number", "phone"])).trim();
+          const aadhar_number = String(getVal(["ADHAR NUMBER", "adhar number", "adhar_number", "Adhar card No.", "aadhar_number", "aadhar card no", "aadhar"])).trim();
+          const email = String(getVal(["EMAIL", "email", "email_id", "email id"])).trim();
 
           return {
             id: `row-${idx}-${Date.now()}`,
             enrol_no,
-            roll_number,
             name,
             father_name,
-            fee_amt,
-            fee_date,
-            fee_div,
-            class: className,
+            sub_group_id,
+            phone_no,
             aadhar_number,
             email,
-            mobile_number,
           };
         });
 
@@ -197,8 +180,8 @@ export default function AddStudentPage() {
   // Submit Manual Single Student
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!manualForm.first_name) {
-      toast.error("Please provide student first name!");
+    if (!manualForm.name) {
+      toast.error("Please provide student NAME!");
       return;
     }
 
@@ -207,17 +190,13 @@ export default function AddStudentPage() {
       const payload = {
         students: [
           {
-            enrol_no: manualForm.enrol_no,
-            roll_number: manualForm.roll_number,
-            name: `${manualForm.first_name} ${manualForm.last_name}`.trim(),
-            father_name: manualForm.father_name,
-            class: manualForm.class,
-            aadhar_number: manualForm.aadhar_number,
+            Enrol_No: manualForm.enrol_no,
+            NAME: manualForm.name,
+            "FATHER NAME": manualForm.father_name,
+            "SUB-GROUP-ID": manualForm.sub_group_id,
+            "PHONE NO.": manualForm.phone_no,
+            "ADHAR NUMBER": manualForm.aadhar_number,
             email: manualForm.email_id,
-            mobile_number: manualForm.mobile_number,
-            fee_amt: manualForm.fee_amt ? Number(manualForm.fee_amt) : undefined,
-            fee_date: manualForm.fee_date,
-            fee_div: manualForm.fee_div,
           },
         ],
         sendEmailImmediately: sendCredsNow,
@@ -234,18 +213,12 @@ export default function AddStudentPage() {
         // Reset form
         setManualForm({
           enrol_no: "",
-          roll_number: "",
-          first_name: "",
-          last_name: "",
+          name: "",
           father_name: "",
-          class: "B.A. II",
-          gender: "Male",
+          sub_group_id: "B.A. I",
+          phone_no: "",
           aadhar_number: "",
           email_id: "",
-          mobile_number: "",
-          fee_amt: "",
-          fee_date: new Date().toISOString().split("T")[0],
-          fee_div: "2-Inst.-2",
         });
       } else {
         toast.error(res.data.message || "Failed to add student.");
@@ -277,10 +250,10 @@ export default function AddStudentPage() {
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-2.5">
-              <PiStudentFill className="text-blue-600" /> Student Admission & Bulk Enrollment
+              <PiStudentFill className="text-blue-600" /> Student Admission & Excel Bulk Upload
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              Add individual student records or batch upload from Excel spreadsheets with automatic email credentials generation.
+              Add individual student records or batch upload Excel files matching: <code>Enrol_No</code>, <code>NAME</code>, <code>FATHER NAME</code>, <code>SUB-GROUP-ID</code>, <code>PHONE NO.</code>, <code>ADHAR NUMBER</code>.
             </p>
           </div>
 
@@ -312,19 +285,23 @@ export default function AddStudentPage() {
         {/* TAB 1: EXCEL BULK UPLOAD */}
         {activeTab === "excel" && (
           <div className="space-y-6">
-            {/* Upload & Action Card */}
+            {/* Upload Card */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
                 <div>
                   <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <PiUploadSimpleBold className="text-emerald-600" /> Upload Spreadsheet (.xlsx, .xls, .csv)
+                    <PiUploadSimpleBold className="text-emerald-600" /> Upload Excel Spreadsheet (.xlsx, .xls, .csv)
                   </h3>
-                  <p className="text-sm text-slate-500 mt-0.5">
-                    Expected columns: <code>enrol no</code>, <code>Roll No.</code>, <code>name</code>, <code>f_name</code>, <code>fee amt</code>, <code>fee date</code>, <code>fee div</code>, <code>Class.</code>, <code>Adhar card No.</code>, <code>email</code>
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Excel Heads:</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">Enrol_No</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">NAME</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">FATHER NAME</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">SUB-GROUP-ID</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">PHONE NO.</span>
+                    <span className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-medium text-slate-700">ADHAR NUMBER</span>
+                  </div>
                 </div>
-
-                
               </div>
 
               {/* Drag & Drop Area */}
@@ -335,7 +312,7 @@ export default function AddStudentPage() {
                     {fileName ? `Selected: ${fileName}` : "Click or drag & drop Excel file here"}
                   </span>
                   <span className="text-xs text-slate-500 mt-1">
-                    Supports .xlsx, .xls, .csv files up to 25MB
+                    Supports .xlsx, .xls, .csv files with the exact table columns
                   </span>
                   <input
                     type="file"
@@ -356,7 +333,7 @@ export default function AddStudentPage() {
                       📋 Preview Data ({excelRows.length} Students)
                     </h3>
                     <p className="text-xs text-slate-500">
-                      You can directly edit student emails or details below before submitting. Random passwords will be generated and emailed to all rows with an email ID.
+                      Superadmin can enter or update email IDs below. Random passwords will be created and sent to student emails.
                     </p>
                   </div>
 
@@ -388,21 +365,18 @@ export default function AddStudentPage() {
                   </div>
                 )}
 
-                {/* Data Grid */}
+                {/* Data Grid with exact requested heads */}
                 <div className="overflow-x-auto border border-slate-200 rounded-xl max-h-[500px]">
                   <table className="min-w-full text-xs text-left">
                     <thead className="bg-slate-100 text-slate-700 font-semibold sticky top-0 uppercase tracking-wider">
                       <tr>
                         <th className="p-2.5 border-b">#</th>
-                        <th className="p-2.5 border-b">Enrol No</th>
-                        <th className="p-2.5 border-b">Roll No</th>
-                        <th className="p-2.5 border-b">Student Name</th>
-                        <th className="p-2.5 border-b">Father Name</th>
-                        <th className="p-2.5 border-b">Class</th>
-                        <th className="p-2.5 border-b">Fee Amt</th>
-                        <th className="p-2.5 border-b">Fee Date</th>
-                        <th className="p-2.5 border-b">Fee Div</th>
-                        <th className="p-2.5 border-b">Aadhar No</th>
+                        <th className="p-2.5 border-b">Enrol_No</th>
+                        <th className="p-2.5 border-b">NAME</th>
+                        <th className="p-2.5 border-b">FATHER NAME</th>
+                        <th className="p-2.5 border-b">SUB-GROUP-ID</th>
+                        <th className="p-2.5 border-b">PHONE NO.</th>
+                        <th className="p-2.5 border-b">ADHAR NUMBER</th>
                         <th className="p-2.5 border-b min-w-[200px]">Student Email (For Credentials)</th>
                         <th className="p-2.5 border-b text-center">Action</th>
                       </tr>
@@ -416,16 +390,8 @@ export default function AddStudentPage() {
                               type="text"
                               value={row.enrol_no}
                               onChange={(e) => handleExcelCellChange(row.id, "enrol_no", e.target.value)}
-                              className="w-24 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
-                              placeholder="H-1001"
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="text"
-                              value={row.roll_number}
-                              onChange={(e) => handleExcelCellChange(row.id, "roll_number", e.target.value)}
-                              className="w-28 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              className="w-24 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white font-medium"
+                              placeholder="J-1001"
                             />
                           </td>
                           <td className="p-2">
@@ -433,7 +399,8 @@ export default function AddStudentPage() {
                               type="text"
                               value={row.name}
                               onChange={(e) => handleExcelCellChange(row.id, "name", e.target.value)}
-                              className="w-36 px-2 py-1 border rounded text-xs font-medium text-slate-800 bg-transparent focus:bg-white"
+                              className="w-40 px-2 py-1 border rounded text-xs font-semibold text-slate-800 bg-transparent focus:bg-white"
+                              placeholder="MOHD AMIR"
                             />
                           </td>
                           <td className="p-2">
@@ -441,39 +408,26 @@ export default function AddStudentPage() {
                               type="text"
                               value={row.father_name}
                               onChange={(e) => handleExcelCellChange(row.id, "father_name", e.target.value)}
-                              className="w-32 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              className="w-36 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              placeholder="MOHD ASIF"
                             />
                           </td>
                           <td className="p-2">
                             <input
                               type="text"
-                              value={row.class}
-                              onChange={(e) => handleExcelCellChange(row.id, "class", e.target.value)}
-                              className="w-20 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="number"
-                              value={row.fee_amt}
-                              onChange={(e) => handleExcelCellChange(row.id, "fee_amt", e.target.value)}
-                              className="w-20 px-2 py-1 border rounded text-xs text-emerald-700 font-semibold bg-transparent focus:bg-white"
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="text"
-                              value={row.fee_date}
-                              onChange={(e) => handleExcelCellChange(row.id, "fee_date", e.target.value)}
+                              value={row.sub_group_id}
+                              onChange={(e) => handleExcelCellChange(row.id, "sub_group_id", e.target.value)}
                               className="w-24 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              placeholder="B.A. I"
                             />
                           </td>
                           <td className="p-2">
                             <input
                               type="text"
-                              value={row.fee_div}
-                              onChange={(e) => handleExcelCellChange(row.id, "fee_div", e.target.value)}
-                              className="w-24 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              value={row.phone_no}
+                              onChange={(e) => handleExcelCellChange(row.id, "phone_no", e.target.value)}
+                              className="w-28 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              placeholder="8957315539"
                             />
                           </td>
                           <td className="p-2">
@@ -481,7 +435,8 @@ export default function AddStudentPage() {
                               type="text"
                               value={row.aadhar_number}
                               onChange={(e) => handleExcelCellChange(row.id, "aadhar_number", e.target.value)}
-                              className="w-32 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              className="w-36 px-2 py-1 border rounded text-xs bg-transparent focus:bg-white"
+                              placeholder="578168107119"
                             />
                           </td>
                           <td className="p-2">
@@ -550,7 +505,7 @@ export default function AddStudentPage() {
               <PiUserPlusBold className="text-blue-600" /> Student Admission Form
             </h3>
             <p className="text-sm text-slate-500 mb-6">
-              Enter individual student credentials and admission particulars.
+              Enter individual student admission particulars matching the required format.
             </p>
 
             <form onSubmit={handleManualSubmit} className="space-y-6">
@@ -558,170 +513,85 @@ export default function AddStudentPage() {
                 {/* Enrol No */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Enrolment No. (enrol no)
+                    Enrol_No
                   </label>
                   <input
                     type="text"
                     value={manualForm.enrol_no}
                     onChange={(e) => setManualForm({ ...manualForm, enrol_no: e.target.value })}
-                    placeholder="e.g. H-1001"
+                    placeholder="e.g. J-1001"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
 
-                {/* Roll No */}
+                {/* NAME */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Roll No.
+                    NAME <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={manualForm.roll_number}
-                    onChange={(e) => setManualForm({ ...manualForm, roll_number: e.target.value })}
-                    placeholder="e.g. 2410041010033"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Class */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Class <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={manualForm.class}
-                    onChange={(e) => setManualForm({ ...manualForm, class: e.target.value })}
-                    placeholder="e.g. B.A. II"
+                    value={manualForm.name}
+                    onChange={(e) => setManualForm({ ...manualForm, name: e.target.value })}
+                    placeholder="e.g. MOHD AMIR"
                     required
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
 
-                {/* First Name */}
+                {/* FATHER NAME */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    First Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={manualForm.first_name}
-                    onChange={(e) => setManualForm({ ...manualForm, first_name: e.target.value })}
-                    placeholder="e.g. MOHD. SHADAB"
-                    required
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Last Name */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    value={manualForm.last_name}
-                    onChange={(e) => setManualForm({ ...manualForm, last_name: e.target.value })}
-                    placeholder="e.g. KHAN"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Father's Name */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Father&apos;s Name (f_name)
+                    FATHER NAME
                   </label>
                   <input
                     type="text"
                     value={manualForm.father_name}
                     onChange={(e) => setManualForm({ ...manualForm, father_name: e.target.value })}
-                    placeholder="e.g. SHAFEEK KHAN"
+                    placeholder="e.g. MOHD ASIF"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
 
-                {/* Adhar Card No */}
+                {/* SUB-GROUP-ID */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Aadhar Card No.
+                    SUB-GROUP-ID <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={manualForm.sub_group_id}
+                    onChange={(e) => setManualForm({ ...manualForm, sub_group_id: e.target.value })}
+                    placeholder="e.g. B.A. I"
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+
+                {/* PHONE NO. */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    PHONE NO.
+                  </label>
+                  <input
+                    type="tel"
+                    value={manualForm.phone_no}
+                    onChange={(e) => setManualForm({ ...manualForm, phone_no: e.target.value })}
+                    placeholder="e.g. 8957315539"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+
+                {/* ADHAR NUMBER */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    ADHAR NUMBER
                   </label>
                   <input
                     type="text"
                     value={manualForm.aadhar_number}
                     onChange={(e) => setManualForm({ ...manualForm, aadhar_number: e.target.value })}
-                    placeholder="e.g. 7469-3519-3208"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Gender */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Gender
-                  </label>
-                  <select
-                    value={manualForm.gender}
-                    onChange={(e) => setManualForm({ ...manualForm, gender: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                {/* Mobile */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Mobile Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={manualForm.mobile_number}
-                    onChange={(e) => setManualForm({ ...manualForm, mobile_number: e.target.value })}
-                    placeholder="e.g. 9876543210"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Fee Amount */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Fee Amount (fee amt)
-                  </label>
-                  <input
-                    type="number"
-                    value={manualForm.fee_amt}
-                    onChange={(e) => setManualForm({ ...manualForm, fee_amt: e.target.value })}
-                    placeholder="e.g. 6015"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-emerald-700"
-                  />
-                </div>
-
-                {/* Fee Date */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Fee Date (fee date)
-                  </label>
-                  <input
-                    type="date"
-                    value={manualForm.fee_date}
-                    onChange={(e) => setManualForm({ ...manualForm, fee_date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Fee Div */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Fee Division / Installment (fee div)
-                  </label>
-                  <input
-                    type="text"
-                    value={manualForm.fee_div}
-                    onChange={(e) => setManualForm({ ...manualForm, fee_div: e.target.value })}
-                    placeholder="e.g. 2-Inst.-2"
+                    placeholder="e.g. 578168107119"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
@@ -733,13 +603,13 @@ export default function AddStudentPage() {
                   <PiPaperPlaneTiltBold className="text-blue-600" /> Student Login Credentials & Email Setup
                 </h4>
                 <p className="text-xs text-blue-800">
-                  Provide the student&apos;s email address. A random password will be created, stored securely, and automatically sent to this email ID upon admission.
+                  Provide the student&apos;s email address. A random password will be created, stored securely, and automatically sent to this email ID. Leave blank if assigning later.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Student Email Address (email)
+                      Student Email Address (Optional)
                     </label>
                     <input
                       type="email"
@@ -771,18 +641,12 @@ export default function AddStudentPage() {
                   onClick={() =>
                     setManualForm({
                       enrol_no: "",
-                      roll_number: "",
-                      first_name: "",
-                      last_name: "",
+                      name: "",
                       father_name: "",
-                      class: "B.A. II",
-                      gender: "Male",
+                      sub_group_id: "B.A. I",
+                      phone_no: "",
                       aadhar_number: "",
                       email_id: "",
-                      mobile_number: "",
-                      fee_amt: "",
-                      fee_date: new Date().toISOString().split("T")[0],
-                      fee_div: "2-Inst.-2",
                     })
                   }
                   className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-xl"
